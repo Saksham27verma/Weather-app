@@ -1,0 +1,101 @@
+body{
+    background-image:url("../public/sunset.webp");
+    background-size:cover;
+}
+
+.container{
+    width: 100%;
+    height: 10vh;
+    margin: 0;
+
+}
+
+.weather{
+    width: 400px;
+    padding: 30px;
+    
+    margin:  auto;
+    border-radius: 10px;
+    background: rgb(44,163,255,0.5);
+background: linear-gradient(90deg, rgba(44,163,255,0.5) 0%, rgba(96,31,255,0,5) 60%, rgba(131,80,255,0.5) 100%);
+    color: white;
+    margin-top: 100px;
+    
+}
+
+.search{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.search input{
+    border: none;
+    outline: 0;
+    padding: 12px 25px;
+    font-size: 18px;
+    background-color: azure;
+    color: black;
+    border-radius: 30px;
+    flex: 1;
+    margin-right: 12px;
+}
+
+.search button{
+    border: none;
+    outline: 0;
+    width: 50px; 
+    margin-right: 2px;
+    background-color: azure;
+    height: 50px; 
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.search button img{
+    width: 20px;
+    
+}
+
+.winfo img{
+    margin-top: 20px;
+    width: 170px;
+}
+
+.winfo h1{
+    font-size: 70px;
+    font-weight: 500;
+    margin-top: 5px;
+}
+
+.winfo h2{
+    font-size: 40px;
+    font-weight: 400;
+    margin-top: -40px;
+}
+
+.details{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0px 20px;
+    margin-top: 50px;
+}
+
+.details .col{
+    display: flex;
+    align-items: center;
+    text-align: left;
+}
+.details .col img{
+    width: 45px;
+    margin-right: 10px;
+}
+
+.humidity , .wind{
+    font-size: 27px;
+}
+
+.humidity p , .wind p{
+    margin: 0px;
+}
