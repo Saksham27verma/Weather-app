@@ -1,73 +1,134 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './style.module.css';
 import axios from 'axios';
 
 function Home() {
-    const [data, setData] = useState({
-        celcius: 10,
-        name: 'London',
-        humidity: 10,
-        speed: 2,
-        image:'../cloudy.png'
-    });
+    const [data, setData] = useState(null); // Initially no data
     const [name, setName] = useState('');
-    const [typingTimer, setTypingTimer] = useState(null); // State to store the typing timer
+    const [loading, setLoading] = useState(true); // State to manage loading state
+
+    const getWeather = (latitude, longitude) => {
+        const apiKey = "ed0fc8fc31bd787c58b379d8c1fc3100";
+        const apiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric`;
+        axios.get(apiUrl)
+            .then(res => {
+                let imagepath = '';
+                switch (res.data.weather[0].main) {
+                    case "Clouds":
+                        imagepath = "../cloudy.png";
+                        break;
+                    case "Clear":
+                        imagepath = "../sun.png";
+                        break;
+                    case "Rain":
+                        imagepath = "../raining.png";
+                        break;
+                    case "Drizzle":
+                        imagepath = "../Drizzle.png";
+                        break;
+                    case "Mist":
+                        imagepath = "../mist.png";
+                        break;
+                    default:
+                        imagepath = '../cloudy.png';
+                }
+                setData({
+                    celcius: res.data.main.temp,
+                    name: res.data.name,
+                    humidity: res.data.main.humidity,
+                    speed: res.data.wind.speed,
+                    image: imagepath
+                });
+                setLoading(false); // Set loading to false once data is fetched
+            })
+            .catch(err => {
+                console.error(err);
+                setLoading(false); // Ensure loading is false in case of error
+            });
+    };
+
+    const currentPosition = () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    getWeather(position.coords.latitude, position.coords.longitude);
+                },
+                (err) => {
+                    console.log("Error retrieving location: " + err.message);
+                    
+                }
+            );
+        } else {
+            console.log("Geolocation not available");
+            //setLoading(false); // Ensure loading is false if geolocation is not available
+        }
+    };
+
+    useEffect(() => {
+        currentPosition();
+    }, []);
 
     const handleKeyDown = (event) => {
         if (event.key === "Enter") {
-            handleclick();
+            handleClick();
         }
     };
 
     const handleChange = (event) => {
         setName(event.target.value);
-        clearTimeout(typingTimer); // Clear any existing timer
-        setTypingTimer(setTimeout(handleSearch, 500)); // Set a new timer for 500 milliseconds
     };
 
-    const handleSearch = () => {
-        handleclick(); // Automatically search for the city after typing has stopped
-    };
-
-    const handleclick = () => {
+    const handleClick = () => {
         if (name !== "") {
+            setLoading(true); // Set loading to true when fetching data
             const apiKey = "ed0fc8fc31bd787c58b379d8c1fc3100";
             const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${name}&appid=${apiKey}&units=metric`;
             axios.get(apiUrl)
                 .then(res => {
-                    let imagepath='';
-                    if(res.data.weather[0].main == "Clouds"){
-                        imagepath = "../cloudy.png"
-                    }else if(res.data.weather[0].main == "Clear"){
-                        imagepath = "../sun.png"
-                    }else if(res.data.weather[0].main == "Rain"){
-                        imagepath = "../raining.png"
-                    }else if(res.data.weather[0].main == "Drizzle"){
-                        imagepath = "../Drizzle.png"
-                    }else if(res.data.weather[0].main == "Mist"){
-                        imagepath = "../mist.png"
-                    }else {
-                        imagepath = '../cloudy.png'
+                    let imagepath = '';
+                    switch (res.data.weather[0].main) {
+                        case "Clouds":
+                            imagepath = "../cloudy.png";
+                            break;
+                        case "Clear":
+                            imagepath = "../sun.png";
+                            break;
+                        case "Rain":
+                            imagepath = "../raining.png";
+                            break;
+                        case "Drizzle":
+                            imagepath = "../Drizzle.png";
+                            break;
+                        case "Mist":
+                            imagepath = "../mist.png";
+                            break;
+                        default:
+                            imagepath = '../cloudy.png';
                     }
                     setData({
                         celcius: res.data.main.temp,
                         name: res.data.name,
                         humidity: res.data.main.humidity,
                         speed: res.data.wind.speed,
-                        image: imagepath 
+                        image: imagepath
                     });
+                    setName('');
+                    setLoading(false); // Set loading to false once data is fetched
                 })
-                .catch(err => console.error(err));
+                .catch(err => {
+                    console.error(err);
+                    setLoading(false); // Ensure loading is false in case of error
+                });
         }
     };
 
-    const voicerecognition = () => {
+    const voiceRecognition = () => {
         const recognition = new window.webkitSpeechRecognition();
         recognition.lang = "en-GB";
-        recognition.onresult = function(event){
+        recognition.onresult = function(event) {
             const speechToText = event.results[0][0].transcript;
             setName(speechToText); // Set recognized text in the input field
-            handleSearch(); // Trigger search immediately after setting the name
+            handleClick(); // Trigger search immediately after setting the name
         };
         recognition.onerror = function(event) {
             console.error('Speech recognition error occurred: ', event.error);
@@ -89,34 +150,45 @@ function Home() {
                         onChange={handleChange}
                         onKeyDown={handleKeyDown}
                     />
-                    <button><img src="../search.png" alt="Search" onClick={handleclick} /></button>
-                    <button onClick={voicerecognition}><img src='../mic.png' alt='mic'></img></button>
+                    <button onClick={handleClick}><img src="../search.png" alt="Search" /></button>
+                    <button onClick={voiceRecognition}><img src='../mic.png' alt='mic' /></button>
+                    <button onClick={currentPosition}><img src='../location-pin.png' alt='location' /></button>
                 </div>
-                
-                <div className={styles.winfo}>
-                    <img src={data.image} alt="" />
-                    <h1>{Math.round(data.celcius)}ºC</h1>
-                    <h2>{data.name}</h2>
-                    <div className={styles.details}>
-                        <div className={styles.col}>
-                            <img src="../humidity.png" alt='' />
-                            <div className={styles.humidity}>
-                                <p>{Math.round(data.humidity)}%</p>
-                                <p>Humidity %</p>
+                {loading ? (
+                    <div className={styles.loading}>
+                        <img src="../Weathericons.gif" alt="Loading..." />
+                        
+                    </div>
+                ) : data ? (
+                    <div className={styles.winfo}>
+                        <img src={data.image} alt="" />
+                        <h1>{Math.round(data.celcius)}ºC</h1>
+                        <h2>{data.name}</h2>
+                        <div className={styles.details}>
+                            <div className={styles.col}>
+                                <img src="../humidity.png" alt="" />
+                                <div className={styles.humidity}>
+                                    <p>{Math.round(data.humidity)}%</p>
+                                    <p>Humidity</p>
+                                </div>
                             </div>
-                        </div>
-                        <div className={styles.col}>
-                            <img src="../wind.png" alt='' />
-                            <div className={styles.wind}>
-                                <p>{Math.round(data.speed)} km/hr</p>
-                                <p>Wind</p>
+                            <div className={styles.col}>
+                                <img src="../wind.png" alt="" />
+                                <div className={styles.wind}>
+                                    <p>{Math.round(data.speed)} km/hr</p>
+                                    <p>Wind</p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                ) : (
+                    <div className={styles.winfo}>
+                        <p>No data available</p>
+                    </div>
+                )}
             </div>
         </div>
-    )
+    );
 }
 
 export default Home;

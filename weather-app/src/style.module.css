@@ -45,7 +45,7 @@ background: linear-gradient(90deg, rgba(44,163,255,0.5) 0%, rgba(96,31,255,0,5) 
     border: none;
     outline: 0;
     width: 50px; 
-    margin-right: 2px;
+    margin-right: 3px;
     background-color: azure;
     height: 50px; 
     border-radius: 50%;
@@ -53,11 +53,15 @@ background: linear-gradient(90deg, rgba(44,163,255,0.5) 0%, rgba(96,31,255,0,5) 
 }
 
 .search button img{
-    width: 20px;
+    width: 23px;
     
 }
 
 .winfo img{
+    margin-top: 20px;
+    width: 170px;
+}
+.loading img{
     margin-top: 20px;
     width: 170px;
 }
