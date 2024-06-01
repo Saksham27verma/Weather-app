@@ -102,7 +102,7 @@ function Home() {
                             <img src="../humidity.png" alt='' />
                             <div className={styles.humidity}>
                                 <p>{Math.round(data.humidity)}%</p>
-                                <p>Humidity</p>
+                                <p>Humidity %</p>
                             </div>
                         </div>
                         <div className={styles.col}>
